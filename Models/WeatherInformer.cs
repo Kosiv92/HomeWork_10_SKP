@@ -7,12 +7,12 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HomeWork_09_SKP
+namespace HomeWork_10_SKP
 {
     /// <summary>
     /// Класс получения данных о погоде
     /// </summary>
-    static class WeatherHerald
+    static class WeatherInformer
     {
         static string url = "http://api.openweathermap.org/data/2.5/weather?q=";
 

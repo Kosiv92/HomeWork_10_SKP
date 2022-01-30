@@ -3,7 +3,7 @@
     /// <summary>
     /// Класс хранящий состояние взаимодействия с пользователем в чает
     /// </summary>
-    internal class ClientState
+    public class ClientState
     {
         
         public ClientState()

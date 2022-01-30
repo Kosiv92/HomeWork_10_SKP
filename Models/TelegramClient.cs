@@ -11,7 +11,7 @@ namespace HomeWork_10_SKP
     /// <summary>
     /// Модель клиента Telegram-бота
     /// </summary>
-    public class TelegramClient : INotifyPropertyChanged, IEquatable<TelegramClient>
+    public class TelegramClient : INotifyPropertyChanged, IEquatable<TelegramClient>, IServiceSubscriber
     {
 
         /// <summary>
@@ -21,17 +21,19 @@ namespace HomeWork_10_SKP
         /// <param name="id"></param>
         public TelegramClient(string nickName, long id)
         {
-            this.nickName = nickName;
+            this.name = nickName;
             this.id = id;
             Messages = new ObservableCollection<string>();
+            State = new ClientState();
 
         }
 
         #region Поля
 
-        private string nickName; //логин клиента
+        private string name; //логин клиента
 
-        private long id; //уникальный идентификатор клиента
+        private long id; //уникальный идентификатор клиента               
+
         #endregion
 
         #region Свойства
@@ -39,20 +41,20 @@ namespace HomeWork_10_SKP
         /// <summary>
         /// Свойство доступа к полю хранющему логин клиента
         /// </summary>
-        public string NickName
+        public string Name
         {
-            get { return this.nickName; }
+            get { return this.name; }
             set
             {
-                this.nickName = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.NickName)));
+                this.name = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Name)));
             }
         }
 
         /// <summary>
         /// Статус обработки обновлений от клиентов
         /// </summary>
-        internal ClientState TelegramClientState{ get; set; }
+        public ClientState State{ get; set; }
 
         /// <summary>
         /// Свойство доступа к полю храняющему уникальный идентификатор клиента

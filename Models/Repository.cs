@@ -13,39 +13,46 @@ namespace HomeWork_10_SKP
     /// <summary>
     /// Статический класс с методами взаимодействия с репозиторием 
     /// </summary>
-    static class Repository
+    public class Repository
     {
         //строка хранящая путь к репозиторию
-        static readonly string pathToRepository = Environment.CurrentDirectory + "\\repo\\";
+        readonly string pathToRepository;
 
-        static DirectoryInfo repoDirectory;
+        DirectoryInfo _repoDirectory;
+
+        /// <summary>
+        /// Свойство доступа к директории репозитория
+        /// </summary>
+        public string PathToRepository
+        {
+            get { return pathToRepository; }
+        }
+
+        public Repository()
+        {
+            pathToRepository = Environment.CurrentDirectory + "\\repo\\";
+
+            CreateRepoDirectory();
+        }
 
         /// <summary>
         /// Метод создания директории для загрузки/скачивания и хранения файлов, в случае если такой директории не существует
         /// </summary>
-        static public void CreateRepoDirectory()
+        public void CreateRepoDirectory()
         {
             if (!CheckRepoDirectory())
             {
                 Directory.CreateDirectory(pathToRepository);
             }
-            
-            repoDirectory = new DirectoryInfo(pathToRepository);
 
+            _repoDirectory = new DirectoryInfo(pathToRepository);
         }
-        /// <summary>
-        /// Свойство доступа к директории репозитория
-        /// </summary>
-        public static string PathToRepository
-            {
-                get { return pathToRepository; }
-            }
-
+        
         /// <summary>
         /// Метод проверки существования директории для загрузки/скачивания и хранения файлов
         /// </summary>
         /// <returns>Результат проверки</returns>
-        static public bool CheckRepoDirectory()
+        bool CheckRepoDirectory()
         {
             DirectoryInfo path = new DirectoryInfo(pathToRepository);
             if (path.Exists) return true;
@@ -53,39 +60,32 @@ namespace HomeWork_10_SKP
         }
 
         /// <summary>
-        /// Метод отправки выбранного пользователем файла в его чат
+        /// Получение списка файлов хранящихся в репозитории
         /// </summary>
-        /// <param name="botClient">Чат-бот от которого поступает запрос</param>
-        /// <param name="fileName">Имя файла</param>
-        /// <param name="chatId">ID чата</param>
-        static public async void Upload(TelegramBotClient botClient, string fileName, ChatId chatId)
+        /// <returns>Список файлов хранящихся в репозитории</returns>
+        public FileInfo[] GetFilesName()
         {
-            string fullFileName = pathToRepository + "\\" + fileName;                        
-
-            try
-            {                
-                using (FileStream stream = System.IO.File.OpenRead(fullFileName))
-                {
-                    InputOnlineFile inputOnlineFile = new InputOnlineFile(stream, fullFileName);
-                    await botClient.SendDocumentAsync(chatId, inputOnlineFile);
-                }
-            }
-            catch (System.IO.FileNotFoundException)
-            {
-                await botClient.SendTextMessageAsync(chatId: chatId, text: $"File \"{fileName}\" does not exists");
-            }
-        }                
-
-        static public FileInfo[] GetFilesName()
-        {            
             //FileInfo[] Files = repoDirectory.GetFiles("*.pdf");
-            FileInfo[] files = repoDirectory.GetFiles();
+            FileInfo[] files = _repoDirectory.GetFiles();
             string str = "";
             foreach (FileInfo file in files)
             {
                 str = str + ", " + file.Name;
             }
             return files;
+        }
+
+        public string GetFileList()
+        {
+            FileInfo[] files = _repoDirectory.GetFiles();
+            StringBuilder fileList = new StringBuilder();
+            foreach (var file in files)
+            {
+                fileList.Append($"- {file.Name}\n");
+            }
+
+            return fileList.ToString();
+
         }
 
     }

@@ -22,7 +22,13 @@
                  Grid.Row="0" 
                  Grid.RowSpan="3"
                  Background="Blue"
-                 FontSize="20"/>
+                 FontSize="20">
+                    <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding NickName}"/> 
+                    </DataTemplate>
+                    </ListBox.ItemTemplate>
+        </ListBox>
         <GridSplitter Grid.Column="1" 
                       Grid.RowSpan="3" 
                       ShowsPreview="False" 
@@ -33,14 +39,16 @@
                  Grid.Column="2"
                  Grid.Row="0"
                  Background="Pink"
-                 FontSize="20"/>
+                 FontSize="20"
+                 ItemsSource="{Binding ElementName=ClientList, Path=SelectedItem.Messages}"
+                 />
         <Button x:Name="SendMessageButton" Grid.Column="2"
                 Grid.Row="2"
                 Background="Aquamarine"
                 Content="Send" 
                 FontSize="25"
                 />
-        <TextBox x:Name="MessageToSend"
+        <TextBox x:Name="textBox_msgToSend"
                  Grid.Column="2"
                  Grid.Row="1"
                  Background="Brown"
