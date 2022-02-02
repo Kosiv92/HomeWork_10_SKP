@@ -51,7 +51,6 @@ namespace HomeWork_10_SKP
 
         #endregion
 
-
         #region Методы
 
         /// <summary>
@@ -117,7 +116,7 @@ namespace HomeWork_10_SKP
                 //_iOHelper.Receiver.SaveFileToRepository(update);
                 //break;
                 case MessageType.Audio:
-                    _iOHelper.Receiver.SaveFileToRepository(update);
+                    _iOHelper.Receiver.SaveFile(update);
                     break;
                 case MessageType.Text:
                     ServeTextUpdate(update);
@@ -251,7 +250,7 @@ namespace HomeWork_10_SKP
                 case UploadText:
                     break;
                 default:
-                    _iOHelper.Sender.SendFileToChat(update.Message.Text, update.Message.Chat.Id);
+                    _iOHelper.Sender.SendFile(update.Message.Text, update.Message.Chat.Id);
                     break;
             }
         }

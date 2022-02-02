@@ -45,7 +45,7 @@ namespace HomeWork_10_SKP
 
             ITelegramUpdateHandler messageHandler = new MessageHandler(telegramBotKeeper.UpdateReceiver); //создаем реализацию интерфейса для обработки входящих обновлений
 
-            telegramBotKeeper.UpdateReceiver.UpdateHandler = messageHandler; //передаем реализацию обработчика входящих обновлений 
+            telegramBotKeeper.UpdateReceiver.UpdateHandler = messageHandler; //передаем реализацию обработчика входящих обновлений                         
 
             telegramBotKeeper.UpdateReceiver.StartReceiveUpdates(); //запуск приема обновлений от клиентов бота                      
             
