@@ -12,20 +12,19 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace HomeWork_10_SKP
 {
-    public class MessageHandler
+    public class MessageHandler : ITelegramUpdateHandler
     {
         #region Поля и Свойства
 
         readonly InputOutputFileForwarder _iOHelper;
 
         internal Dictionary<long, ClientState> _userState;
+                
+        readonly TelegramBotUpdateReceiver _updateReceiver;
 
-        readonly TelegramBotKeeper _telegramBotKeeper;
+        public InputOutputFileForwarder IOHelper { get { return _iOHelper; } }
 
-        public InputOutputFileForwarder IOHelper
-        {
-            get { return _iOHelper; }
-        }
+        public TelegramBotUpdateReceiver UpdateReceiver { get { return _updateReceiver;} }
 
         /// <summary>
         /// Номер выбранного файла из списка файлов
@@ -40,8 +39,6 @@ namespace HomeWork_10_SKP
         };
 
         #endregion
-
-
 
         #region Константы
 
@@ -61,11 +58,11 @@ namespace HomeWork_10_SKP
         /// Конструкторы объекта класса
         /// </summary>
         /// <param name="bot">Класс хранящий конфигурацию телеграм-бота</param>
-        public MessageHandler(TelegramBotKeeper bot)
+        public MessageHandler(TelegramBotUpdateReceiver updateReceiver)
         {
-            _telegramBotKeeper = bot;
+            _updateReceiver = updateReceiver;
 
-            _iOHelper = new InputOutputFileForwarder(bot);
+            _iOHelper = new InputOutputFileForwarder(_updateReceiver.BotKeeper);
 
             _userState = new Dictionary<long, ClientState>();
         }
@@ -136,21 +133,21 @@ namespace HomeWork_10_SKP
         {
             SaveLogger(update);
 
-            if (_telegramBotKeeper.TelegramClients[update.Message.Chat.Id].State.isFileSendOn == true) UploadHandler(update);
-            else if (_telegramBotKeeper.TelegramClients[update.Message.Chat.Id].State.isWeatherSearchOn == true) WeatherHandler(update);
+            if (_updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id].State.isFileSendOn == true) UploadHandler(update);
+            else if (_updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id].State.isWeatherSearchOn == true) WeatherHandler(update);
             else
             {
-                _telegramBotKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: "Choose action", replyMarkup: GetButtons());
+                _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: "Choose action", replyMarkup: GetButtons());
                 switch (update.Message.Text)
                 {
                     case ListText:
-                        _telegramBotKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: _telegramBotKeeper.Repository.GetFileList());
+                        _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: IOHelper.Repository.GetFileList());
                         break;
                     case WeatherText:
-                        TurnOnWeatherSearch(_telegramBotKeeper.TelegramClients[update.Message.Chat.Id]);
+                        TurnOnWeatherSearch(_updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id]);
                         break;
                     case UploadText:
-                        TurnOnFileSendingMode(_telegramBotKeeper.TelegramClients[update.Message.Chat.Id]);
+                        TurnOnFileSendingMode(_updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id]);
                         break;
                 }
             }
@@ -176,7 +173,7 @@ namespace HomeWork_10_SKP
             client.State.isFileSendOn = false;
             client.State.isWeatherSearchOn = true;
 
-            await _telegramBotKeeper.Bot.SendTextMessageAsync(chatId: client.Id, text: "Write name of city which weather you need to know!", replyMarkup: new ReplyKeyboardMarkup("Cancel"));
+            await _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(chatId: client.Id, text: "Write name of city which weather you need to know!", replyMarkup: new ReplyKeyboardMarkup("Cancel"));
         }
 
         /// <summary>
@@ -188,7 +185,7 @@ namespace HomeWork_10_SKP
 
             if (update.Message.Text == CancelText)
             {
-                _telegramBotKeeper.TelegramClients[update.Message.Chat.Id].State.isWeatherSearchOn = false;
+                _updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id].State.isWeatherSearchOn = false;
                 ServeUpdate(update);
             }
             else
@@ -204,7 +201,7 @@ namespace HomeWork_10_SKP
         async private void SendWeatherForecast(Update update)
         {
             string temperature = WeatherInformer.WeatherRequest(update.Message.Text);
-            await _telegramBotKeeper.Bot.SendTextMessageAsync(chatId: update.Message.Chat.Id, text: temperature);
+            await _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(chatId: update.Message.Chat.Id, text: temperature);
         }
 
         #endregion
@@ -223,7 +220,7 @@ namespace HomeWork_10_SKP
 
             FileInfo[] files = _iOHelper.Repository.GetFilesName();
 
-            await _telegramBotKeeper.Bot.SendTextMessageAsync(client.Id, text: "Choose file to upload", replyMarkup: GetUploadButtons(files, numberOfFile));
+            await _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(client.Id, text: "Choose file to upload", replyMarkup: GetUploadButtons(files, numberOfFile));
         }
 
         /// <summary>
@@ -234,12 +231,12 @@ namespace HomeWork_10_SKP
         {
             FileInfo[] files = _iOHelper.Repository.GetFilesName();
 
-            await _telegramBotKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: "Choose file to upload", replyMarkup: GetUploadButtons(files, numberOfFile));
+            await _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: "Choose file to upload", replyMarkup: GetUploadButtons(files, numberOfFile));
 
             switch (update.Message.Text)
             {
                 case CancelText:
-                    _telegramBotKeeper.TelegramClients[update.Message.Chat.Id].State.isFileSendOn = false;
+                    _updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id].State.isFileSendOn = false;
                     numberOfFile = 0;
                     ServeUpdate(update);
                     break;

@@ -6,12 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InputFiles;
 
 namespace HomeWork_10_SKP
 {
 
-    public class InputOutputFileForwarder
+    public class InputOutputFileForwarder : ITelegramUpdateHandler
     {
         TelegramBotKeeper _botKeeper;
 
@@ -31,10 +32,14 @@ namespace HomeWork_10_SKP
 
             _repository = new Repository();
         }
+        public void ServeUpdate(Update update)
+        {
+            throw new NotImplementedException();
+        }
 
         public FileReceiver Receiver { get { return _receiver; } }
 
-        public FileSender Sender { get { return _sender;} }
+        public FileSender Sender { get { return _sender; } }
 
         public Repository Repository { get { return _repository; } }
 
@@ -46,10 +51,25 @@ namespace HomeWork_10_SKP
     {
         readonly InputOutputFileForwarder _inputOutputFileForwarder;
 
+        Dictionary<MessageType, Func<Update, Task>> methods;
+
         public FileReceiver(InputOutputFileForwarder inputOutputFileForwarder)
         {
             _inputOutputFileForwarder = inputOutputFileForwarder;
+
+            CreateMethods();
         }
+
+        private void CreateMethods()
+        {
+            methods = new Dictionary<MessageType, Func<Update, Task>>
+            {
+                { MessageType.Document, SaveDocumentToRepository },
+                { MessageType.Video, SaveVideoToRepository },
+                { MessageType.Audio, SaveVideoToRepository },
+            };
+        }
+
 
         /// <summary>
         /// Метод загрузки полученного от телеграм-бота файла
@@ -57,34 +77,68 @@ namespace HomeWork_10_SKP
         /// <param name="update">Входящее обновление</param>
         public async void SaveFileToRepository(Update update)
         {
-            Telegram.Bot.Types.File file;
+            Func<Update, Task> save = methods[update.Message.Type];
 
+            save(update);
+        }
+
+        /// <summary>
+        /// Сохранить документ в репозитории
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns></returns>
+        public async Task SaveDocumentToRepository(Update update)
+        {
+            Telegram.Bot.Types.File file;
             string path = "";
 
-            switch (update.Message.Type)
-            {
-                case Telegram.Bot.Types.Enums.MessageType.Document:
-                    path = _inputOutputFileForwarder.Repository.PathToRepository + update.Message.Document.FileName;
-                    file = await _inputOutputFileForwarder.BotKeeper.Bot.GetFileAsync(update.Message.Document.FileId);
-                    break;
-                case Telegram.Bot.Types.Enums.MessageType.Audio:
-                    path = _inputOutputFileForwarder.Repository.PathToRepository + update.Message.Audio.FileName;
-                    file = await _inputOutputFileForwarder.BotKeeper.Bot.GetFileAsync(update.Message.Audio.FileId);
-                    break;
-                case Telegram.Bot.Types.Enums.MessageType.Video:
-                    path = _inputOutputFileForwarder.Repository.PathToRepository + update.Message.Video.FileName;
-                    file = await _inputOutputFileForwarder.BotKeeper.Bot.GetFileAsync(update.Message.Video.FileId);
-                    break;
-                default:
-                    return;
-            }
+            path = _inputOutputFileForwarder.Repository.PathToRepository + update.Message.Document.FileName;
+            file = await _inputOutputFileForwarder.BotKeeper.Bot.GetFileAsync(update.Message.Document.FileId);
 
+            await DoawnloadFile(path, file);                        
+        }
+
+        /// <summary>
+        /// Сохранить аудиофайл в репозитории
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns></returns>
+        public async Task SaveAudioToRepository(Update update)
+        {
+            Telegram.Bot.Types.File file;
+            string path = "";
+
+            path = _inputOutputFileForwarder.Repository.PathToRepository + update.Message.Audio.FileName;
+            file = await _inputOutputFileForwarder.BotKeeper.Bot.GetFileAsync(update.Message.Audio.FileId);
+
+            await DoawnloadFile(path, file);
+        }
+
+        /// <summary>
+        /// Сохранить видеофайл в репозитории
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns></returns>
+        public async Task SaveVideoToRepository(Update update)
+        {
+            Telegram.Bot.Types.File file;
+            string path = "";
+
+            path = _inputOutputFileForwarder.Repository.PathToRepository + update.Message.Video.FileName;
+            file = await _inputOutputFileForwarder.BotKeeper.Bot.GetFileAsync(update.Message.Video.FileId);
+
+            await DoawnloadFile(path, file);
+        }
+
+        async Task DoawnloadFile(string path, Telegram.Bot.Types.File file)
+        {
             FileStream fs = new FileStream(path, FileMode.Create);
             await _inputOutputFileForwarder.BotKeeper.Bot.DownloadFileAsync(file.FilePath, fs);
             fs.Close();
-
             fs.Dispose();
         }
+
+
     }
 
     public class FileSender
