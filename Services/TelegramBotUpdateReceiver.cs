@@ -59,7 +59,14 @@ namespace HomeWork_10_SKP
         /// Конструктор объектов класса
         /// </summary>
         /// <param name="botKeeper"></param>
-        public TelegramBotUpdateReceiver(TelegramBotKeeper botKeeper) => _telegramBotKeeper = botKeeper;
+        public TelegramBotUpdateReceiver(TelegramBotKeeper telegramBotKeeper, ITelegramUpdateHandler updateHandler)
+        {
+            _telegramBotKeeper = telegramBotKeeper;
+
+            UpdateHandler = updateHandler;
+
+        }
+
 
         /// <summary>
         /// Запуск приема входящих обновлений

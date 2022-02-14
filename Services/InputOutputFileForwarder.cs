@@ -14,16 +14,13 @@ namespace HomeWork_10_SKP
 
     public class InputOutputFileForwarder : ITelegramUpdateHandler
     {
-        TelegramBotKeeper _botKeeper;
-                
+                        
         readonly Repository _repository;
 
         Dictionary<MessageType, Func<Update, Task>> types;
 
-        public InputOutputFileForwarder(TelegramBotKeeper bot)
+        public InputOutputFileForwarder()
         {
-            _botKeeper = bot;
-
             _repository = new Repository();
 
             CreateAvailableTypes();
@@ -53,10 +50,7 @@ namespace HomeWork_10_SKP
             set { Sender = value; }
         }
 
-        public Repository Repository { get { return _repository; } }
-
-        public TelegramBotKeeper BotKeeper { get { return _botKeeper; } }
-
+        public Repository Repository { get { return _repository; } }               
 
         private void CreateAvailableTypes()
         {

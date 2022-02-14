@@ -41,13 +41,15 @@ namespace HomeWork_10_SKP
 
             string token = System.IO.File.ReadAllText("token.txt"); //получения уникального идентификатора (токена)
 
-            TelegramBotKeeper telegramBotKeeper = new TelegramBotKeeper(token); //инициализация клиента API серверов Telegram
+            //TelegramBotKeeper telegramBotKeeper = new TelegramBotKeeper(token); //инициализация клиента API серверов Telegram
 
-            ITelegramUpdateHandler messageHandler = new MessageHandler(telegramBotKeeper.UpdateReceiver); //создаем реализацию интерфейса для обработки входящих обновлений
+            var telegramBotUpdateReceiver = new TelegramBotUpdateReceiver(new TelegramBotKeeper(token), new MessageHandler());
 
-            telegramBotKeeper.UpdateReceiver.UpdateHandler = messageHandler; //передаем реализацию обработчика входящих обновлений                         
+            //ITelegramUpdateHandler messageHandler = new MessageHandler(telegramBotKeeper.UpdateReceiver); //создаем реализацию интерфейса для обработки входящих обновлений
 
-            telegramBotKeeper.UpdateReceiver.StartReceiveUpdates(); //запуск приема обновлений от клиентов бота                      
+            //telegramBotKeeper.UpdateReceiver.UpdateHandler = messageHandler; //передаем реализацию обработчика входящих обновлений                         
+
+            telegramBotUpdateReceiver.StartReceiveUpdates(); //запуск приема обновлений от клиентов бота                      
             
         }
     }

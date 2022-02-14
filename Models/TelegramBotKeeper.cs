@@ -32,7 +32,7 @@ namespace HomeWork_10_SKP
         /// <summary>
         /// Объект обрабатывающий обновления поступающие от клиентов бота
         /// </summary>
-        TelegramBotUpdateReceiver _updateReceiver;
+        //TelegramBotUpdateReceiver _updateReceiver;
 
         #endregion
 
@@ -46,7 +46,7 @@ namespace HomeWork_10_SKP
         /// <summary>
         /// Свойство доступа к обработчику обновлений
         /// </summary>
-        public TelegramBotUpdateReceiver UpdateReceiver { get => _updateReceiver; }
+        //public TelegramBotUpdateReceiver UpdateReceiver { get => _updateReceiver; }
 
         /// <summary>
         /// Свойство доступа к списку клиентов
@@ -61,9 +61,7 @@ namespace HomeWork_10_SKP
                 
         public TelegramBotKeeper(string token)
         {
-            _bot = new TelegramBotClient(token);
-
-            _updateReceiver = new TelegramBotUpdateReceiver(this);                       
+            _bot = new TelegramBotClient(token);                                               
 
             _telegramClients = new Dictionary<long, TelegramClient>();
         } 

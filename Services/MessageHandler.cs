@@ -61,7 +61,7 @@ namespace HomeWork_10_SKP
         {
             _updateReceiver = updateReceiver;
 
-            _iOHelper = new InputOutputFileForwarder(_updateReceiver.BotKeeper);
+            _iOHelper = new InputOutputFileForwarder();
 
             _userState = new Dictionary<long, ClientState>();
         }
@@ -226,7 +226,7 @@ namespace HomeWork_10_SKP
         /// Обработчик запросов на отправку файлов клиенту
         /// </summary>
         /// <param name="update">Обновление от клиента</param>
-        async private void UploadHandler(Update update)
+        async private Task UploadHandler(Update update)
         {
             FileInfo[] files = _iOHelper.Repository.GetFilesName();
 
@@ -259,4 +259,66 @@ namespace HomeWork_10_SKP
         #endregion
 
     }
+
+    //public class UploadHandler : ITelegramUpdateHandler
+    //{
+    //    const string ListText = "ShowList";        
+    //    const string UploadText = "Upload";
+    //    const string PrevFileText = "<";
+    //    const string NextFileText = ">";
+    //    const string CancelText = "Cancel";
+
+    //    readonly InputOutputFileForwarder _iOHelper;
+
+    //    FileInfo[] files;
+
+    //    /// <summary>
+    //    /// Номер выбранного файла из списка файлов
+    //    /// </summary>
+    //    int numberOfFile = 0;
+
+    //    public InputOutputFileForwarder IOHelper { get { return _iOHelper; } }
+
+    //    public UploadHandler()
+    //    {
+    //        _iOHelper = new InputOutputFileForwarder();
+    //    }
+
+    //    public void ServeUpdate(Update update)
+    //    {
+    //        files = _iOHelper.Repository.GetFilesName();
+
+
+    //    }
+
+    //    async private Task UploadHandler(Update update)
+    //    {
+    //        FileInfo[] files = _iOHelper.Repository.GetFilesName();
+
+    //        await _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: "Choose file to upload", replyMarkup: GetUploadButtons(files, numberOfFile));
+
+    //        switch (update.Message.Text)
+    //        {
+    //            case CancelText:
+    //                _updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id].State.isFileSendOn = false;
+    //                numberOfFile = 0;
+    //                ServeUpdate(update);
+    //                break;
+    //            case PrevFileText:
+    //                if (numberOfFile > 0) numberOfFile--;
+    //                else numberOfFile = files.Length - 1;
+    //                break;
+    //            case NextFileText:
+    //                if (numberOfFile < files.Length - 1) numberOfFile++;
+    //                else numberOfFile = 0;
+    //                break;
+    //            case UploadText:
+    //                break;
+    //            default:
+    //                _iOHelper.Sender.SendFile(update.Message.Text, update.Message.Chat.Id);
+    //                break;
+    //        }
+    //    }
+    //}
+
 }
