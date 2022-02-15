@@ -43,12 +43,8 @@ namespace HomeWork_10_SKP
 
             //TelegramBotKeeper telegramBotKeeper = new TelegramBotKeeper(token); //инициализация клиента API серверов Telegram
 
-            var telegramBotUpdateReceiver = new TelegramBotUpdateReceiver(new TelegramBotKeeper(token), new MessageHandler());
-
-            //ITelegramUpdateHandler messageHandler = new MessageHandler(telegramBotKeeper.UpdateReceiver); //создаем реализацию интерфейса для обработки входящих обновлений
-
-            //telegramBotKeeper.UpdateReceiver.UpdateHandler = messageHandler; //передаем реализацию обработчика входящих обновлений                         
-
+            var telegramBotUpdateReceiver = new TelegramBotUpdateReceiver(TelegramBotKeeper.GetInstance(), new MessageHandler(TelegramBotKeeper.GetInstance()));
+            
             telegramBotUpdateReceiver.StartReceiveUpdates(); //запуск приема обновлений от клиентов бота                      
             
         }

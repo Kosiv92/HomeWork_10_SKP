@@ -16,15 +16,13 @@ namespace HomeWork_10_SKP
     {
         #region Поля и Свойства
 
+        readonly TelegramBotKeeper _botKeeper;
+        
         readonly InputOutputFileForwarder _iOHelper;
 
-        internal Dictionary<long, ClientState> _userState;
-                
-        readonly TelegramBotUpdateReceiver _updateReceiver;
-
-        public InputOutputFileForwarder IOHelper { get { return _iOHelper; } }
-
-        public TelegramBotUpdateReceiver UpdateReceiver { get { return _updateReceiver;} }
+        internal Dictionary<long, ClientState> _userState;               
+        
+        public InputOutputFileForwarder IOHelper { get { return _iOHelper; } }                
 
         /// <summary>
         /// Номер выбранного файла из списка файлов
@@ -57,9 +55,9 @@ namespace HomeWork_10_SKP
         /// Конструкторы объекта класса
         /// </summary>
         /// <param name="bot">Класс хранящий конфигурацию телеграм-бота</param>
-        public MessageHandler(TelegramBotUpdateReceiver updateReceiver)
+        public MessageHandler(TelegramBotKeeper botKeeper)
         {
-            _updateReceiver = updateReceiver;
+            _botKeeper = botKeeper;                       
 
             _iOHelper = new InputOutputFileForwarder();
 
@@ -132,21 +130,21 @@ namespace HomeWork_10_SKP
         {
             SaveLogger(update);
 
-            if (_updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id].State.isFileSendOn == true) UploadHandler(update);
-            else if (_updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id].State.isWeatherSearchOn == true) WeatherHandler(update);
+            if (_botKeeper.TelegramClients[update.Message.Chat.Id].State.isFileSendOn == true) UploadHandler(update);
+            else if (_botKeeper.TelegramClients[update.Message.Chat.Id].State.isWeatherSearchOn == true) WeatherHandler(update);
             else
             {
-                _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: "Choose action", replyMarkup: GetButtons());
+                _botKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: "Choose action", replyMarkup: GetButtons());
                 switch (update.Message.Text)
                 {
                     case ListText:
-                        _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: IOHelper.Repository.GetFileList());
+                        _botKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: IOHelper.Repository.GetFileList());
                         break;
                     case WeatherText:
-                        TurnOnWeatherSearch(_updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id]);
+                        TurnOnWeatherSearch(_botKeeper.TelegramClients[update.Message.Chat.Id]);
                         break;
                     case UploadText:
-                        TurnOnFileSendingMode(_updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id]);
+                        TurnOnFileSendingMode(_botKeeper.TelegramClients[update.Message.Chat.Id]);
                         break;
                 }
             }
@@ -172,7 +170,7 @@ namespace HomeWork_10_SKP
             client.State.isFileSendOn = false;
             client.State.isWeatherSearchOn = true;
 
-            await _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(chatId: client.Id, text: "Write name of city which weather you need to know!", replyMarkup: new ReplyKeyboardMarkup("Cancel"));
+            await _botKeeper.Bot.SendTextMessageAsync(chatId: client.Id, text: "Write name of city which weather you need to know!", replyMarkup: new ReplyKeyboardMarkup("Cancel"));
         }
 
         /// <summary>
@@ -184,7 +182,7 @@ namespace HomeWork_10_SKP
 
             if (update.Message.Text == CancelText)
             {
-                _updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id].State.isWeatherSearchOn = false;
+                _botKeeper.TelegramClients[update.Message.Chat.Id].State.isWeatherSearchOn = false;
                 ServeUpdate(update);
             }
             else
@@ -200,7 +198,7 @@ namespace HomeWork_10_SKP
         async private void SendWeatherForecast(Update update)
         {
             string temperature = WeatherInformer.WeatherRequest(update.Message.Text);
-            await _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(chatId: update.Message.Chat.Id, text: temperature);
+            await _botKeeper.Bot.SendTextMessageAsync(chatId: update.Message.Chat.Id, text: temperature);
         }
 
         #endregion
@@ -219,7 +217,7 @@ namespace HomeWork_10_SKP
 
             FileInfo[] files = _iOHelper.Repository.GetFilesName();
 
-            await _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(client.Id, text: "Choose file to upload", replyMarkup: GetUploadButtons(files, numberOfFile));
+            await _botKeeper.Bot.SendTextMessageAsync(client.Id, text: "Choose file to upload", replyMarkup: GetUploadButtons(files, numberOfFile));
         }
 
         /// <summary>
@@ -227,6 +225,71 @@ namespace HomeWork_10_SKP
         /// </summary>
         /// <param name="update">Обновление от клиента</param>
         async private Task UploadHandler(Update update)
+        {
+            FileInfo[] files = _iOHelper.Repository.GetFilesName();
+
+            await _botKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: "Choose file to upload", replyMarkup: GetUploadButtons(files, numberOfFile));
+
+            switch (update.Message.Text)
+            {
+                case CancelText:
+                    _botKeeper.TelegramClients[update.Message.Chat.Id].State.isFileSendOn = false;
+                    numberOfFile = 0;
+                    ServeUpdate(update);
+                    break;
+                case PrevFileText:
+                    if (numberOfFile > 0) numberOfFile--;
+                    else numberOfFile = files.Length - 1;
+                    break;
+                case NextFileText:
+                    if (numberOfFile < files.Length - 1) numberOfFile++;
+                    else numberOfFile = 0;
+                    break;
+                case UploadText:
+                    break;
+                default:
+                    _iOHelper.Sender.SendFile(update.Message.Text, update.Message.Chat.Id);
+                    break;
+            }
+        }
+        #endregion
+
+        #endregion
+
+    }
+
+    public class UploadHandler : ITelegramUpdateHandler
+    {
+        const string ListText = "ShowList";
+        const string UploadText = "Upload";
+        const string PrevFileText = "<";
+        const string NextFileText = ">";
+        const string CancelText = "Cancel";
+
+        readonly InputOutputFileForwarder _iOHelper;
+
+        FileInfo[] files;
+
+        /// <summary>
+        /// Номер выбранного файла из списка файлов
+        /// </summary>
+        int numberOfFile = 0;
+
+        public InputOutputFileForwarder IOHelper { get { return _iOHelper; } }
+
+        public UploadHandler()
+        {
+            _iOHelper = new InputOutputFileForwarder();
+        }
+
+        public void ServeUpdate(Update update)
+        {
+            files = _iOHelper.Repository.GetFilesName();
+
+
+        }
+
+        async private Task Handler(Update update)
         {
             FileInfo[] files = _iOHelper.Repository.GetFilesName();
 
@@ -254,71 +317,6 @@ namespace HomeWork_10_SKP
                     break;
             }
         }
-        #endregion
-
-        #endregion
-
     }
-
-    //public class UploadHandler : ITelegramUpdateHandler
-    //{
-    //    const string ListText = "ShowList";        
-    //    const string UploadText = "Upload";
-    //    const string PrevFileText = "<";
-    //    const string NextFileText = ">";
-    //    const string CancelText = "Cancel";
-
-    //    readonly InputOutputFileForwarder _iOHelper;
-
-    //    FileInfo[] files;
-
-    //    /// <summary>
-    //    /// Номер выбранного файла из списка файлов
-    //    /// </summary>
-    //    int numberOfFile = 0;
-
-    //    public InputOutputFileForwarder IOHelper { get { return _iOHelper; } }
-
-    //    public UploadHandler()
-    //    {
-    //        _iOHelper = new InputOutputFileForwarder();
-    //    }
-
-    //    public void ServeUpdate(Update update)
-    //    {
-    //        files = _iOHelper.Repository.GetFilesName();
-
-
-    //    }
-
-    //    async private Task UploadHandler(Update update)
-    //    {
-    //        FileInfo[] files = _iOHelper.Repository.GetFilesName();
-
-    //        await _updateReceiver.BotKeeper.Bot.SendTextMessageAsync(update.Message.Chat.Id, text: "Choose file to upload", replyMarkup: GetUploadButtons(files, numberOfFile));
-
-    //        switch (update.Message.Text)
-    //        {
-    //            case CancelText:
-    //                _updateReceiver.BotKeeper.TelegramClients[update.Message.Chat.Id].State.isFileSendOn = false;
-    //                numberOfFile = 0;
-    //                ServeUpdate(update);
-    //                break;
-    //            case PrevFileText:
-    //                if (numberOfFile > 0) numberOfFile--;
-    //                else numberOfFile = files.Length - 1;
-    //                break;
-    //            case NextFileText:
-    //                if (numberOfFile < files.Length - 1) numberOfFile++;
-    //                else numberOfFile = 0;
-    //                break;
-    //            case UploadText:
-    //                break;
-    //            default:
-    //                _iOHelper.Sender.SendFile(update.Message.Text, update.Message.Chat.Id);
-    //                break;
-    //        }
-    //    }
-    //}
 
 }

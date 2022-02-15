@@ -25,6 +25,11 @@ namespace HomeWork_10_SKP
         readonly TelegramBotClient _bot;                
 
         /// <summary>
+        /// Поле для хранение для единственного объекта данного класса
+        /// </summary>
+        private static TelegramBotKeeper _instance;
+
+        /// <summary>
         /// Список клиентов (осуществляющих взаимодействие через чат) телеграм-бота
         /// </summary>
         private Dictionary<long, TelegramClient> _telegramClients;
@@ -58,13 +63,31 @@ namespace HomeWork_10_SKP
         }
 
         #endregion
-                
-        public TelegramBotKeeper(string token)
+
+        #region Методы
+
+        private TelegramBotKeeper(string token)
         {
             _bot = new TelegramBotClient(token);                                               
 
             _telegramClients = new Dictionary<long, TelegramClient>();
-        } 
+        }
+        
+        /// <summary>
+        /// Получение единственног объекта данного класса
+        /// </summary>
+        /// <returns></returns>
+        public static TelegramBotKeeper GetInstance()
+        {
+            if(_instance == null)
+            {
+                _instance = new TelegramBotKeeper(System.IO.File.ReadAllText("token.txt"));
+            }
 
+            return _instance;
+
+        }
+
+        #endregion
     }
 }
