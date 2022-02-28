@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -21,6 +22,8 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TelegramLibrary;
+
 
 namespace HomeWork_10_SKP
 {
@@ -35,18 +38,31 @@ namespace HomeWork_10_SKP
         {
             InitializeComponent();
 
-            Clients = new ObservableCollection<TelegramClient>();
+            //Clients = new ObservableCollection<TelegramClient>();
 
-            ClientList.ItemsSource = Clients;
-
-            string token = System.IO.File.ReadAllText("token.txt"); //получения уникального идентификатора (токена)
+            //ClientList.ItemsSource = Clients;            
 
             //TelegramBotKeeper telegramBotKeeper = new TelegramBotKeeper(token); //инициализация клиента API серверов Telegram
 
-            var telegramBotUpdateReceiver = new TelegramBotUpdateReceiver(TelegramBotKeeper.GetInstance(), new MessageHandler(TelegramBotKeeper.GetInstance()));
+            //ServiceExtension.AddTelegramBot.Add
             
-            telegramBotUpdateReceiver.StartReceiveUpdates(); //запуск приема обновлений от клиентов бота                      
+            //var telegramBotUpdateReceiver = new TelegramBotUpdateReceiver(TelegramBotKeeper.GetInstance(), new MessageHandler(TelegramBotKeeper.GetInstance()));
             
+            //telegramBotUpdateReceiver.StartReceiveUpdates(); //запуск приема обновлений от клиентов бота                      
+                        
+            var services = new ServiceCollection();
+            
+            ServiceExtension.AddTelegramBot(services);
+
+            ServiceProvider container = services.BuildServiceProvider(validateScopes: false);
+
+            IServiceScope scope = container.CreateScope();
+
+            ITelegramBot telegramBotKeeper = scope.ServiceProvider.GetService<ITelegramBot>();                        
+
+            ClientList.ItemsSource = telegramBotKeeper.ClientManager.Clients;
+
+
         }
     }
 }
