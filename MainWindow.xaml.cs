@@ -58,7 +58,9 @@ namespace HomeWork_10_SKP
 
             IServiceScope scope = container.CreateScope();
 
-            ITelegramBot telegramBotKeeper = scope.ServiceProvider.GetService<ITelegramBot>();                        
+            ITelegramBot telegramBotKeeper = scope.ServiceProvider.GetService<ITelegramBot>();
+
+            telegramBotKeeper.UpdateHandler = scope.ServiceProvider.GetService<ITelegramUpdateHandler>();
 
             ClientList.ItemsSource = telegramBotKeeper.ClientManager.Clients;
 
