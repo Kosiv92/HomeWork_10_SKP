@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HomeWork_10_SKP"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="495">
+        Title="MainWindow" Height="450" Width="495" ResizeMode="CanResize">
     <Grid RenderTransformOrigin="0.504,0.504">
         <Grid.ColumnDefinitions>            
             <ColumnDefinition Width="*"/>
@@ -17,18 +17,20 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ListBox x:Name="ClientList" 
-                 Grid.Column="0" 
-                 Grid.Row="0" 
-                 Grid.RowSpan="3"
+        <ScrollViewer  Grid.Column="0" 
+                       Grid.Row="0"
+                       Grid.RowSpan="3">
+            <ListBox x:Name="ClientList"                  
                  Background="Blue"
                  FontSize="20">
-                    <ListBox.ItemTemplate>
+                <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding NickName}"/> 
+                        <TextBlock Text="{Binding NickName}"/>
                     </DataTemplate>
-                    </ListBox.ItemTemplate>
-        </ListBox>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+        
         <GridSplitter Grid.Column="1" 
                       Grid.RowSpan="3" 
                       ShowsPreview="False" 

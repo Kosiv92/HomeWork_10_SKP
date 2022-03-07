@@ -35,21 +35,7 @@ namespace HomeWork_10_SKP
         ObservableCollection<TelegramClient> Clients;
 
         public MainWindow()
-        {
-            InitializeComponent();
-
-            //Clients = new ObservableCollection<TelegramClient>();
-
-            //ClientList.ItemsSource = Clients;            
-
-            //TelegramBotKeeper telegramBotKeeper = new TelegramBotKeeper(token); //инициализация клиента API серверов Telegram
-
-            //ServiceExtension.AddTelegramBot.Add
-            
-            //var telegramBotUpdateReceiver = new TelegramBotUpdateReceiver(TelegramBotKeeper.GetInstance(), new MessageHandler(TelegramBotKeeper.GetInstance()));
-            
-            //telegramBotUpdateReceiver.StartReceiveUpdates(); //запуск приема обновлений от клиентов бота                      
-                        
+        {                        
             var services = new ServiceCollection();
             
             ServiceExtension.AddTelegramBot(services);
@@ -61,10 +47,14 @@ namespace HomeWork_10_SKP
             ITelegramBot telegramBotKeeper = scope.ServiceProvider.GetService<ITelegramBot>();
 
             telegramBotKeeper.UpdateHandler = scope.ServiceProvider.GetService<ITelegramUpdateHandler>();
+                        
+            telegramBotKeeper.StartReceiveUpdates();
+
+            MessageBox.Show("Applicatin has been runing!");
+
+            InitializeComponent();
 
             ClientList.ItemsSource = telegramBotKeeper.ClientManager.Clients;
-
-
         }
     }
 }
