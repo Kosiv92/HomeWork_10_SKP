@@ -17,7 +17,7 @@ namespace TelegramLibrary
 
         public event Action<IAppClient> ClientAdded;
 
-        public event Action<Update> MessageAdded;
+        //public event Action<Update> MessageAdded;
 
         public Dictionary<long, IAppClient> Clients { get => _clients; set => _clients = value; }
                 
@@ -29,11 +29,11 @@ namespace TelegramLibrary
             ClientAdded?.Invoke(_clients[update.Message.Chat.Id]);
         }
                 
-        public void AddMessage(Update update)
-        {
-            _clients[update.Message.Chat.Id].Messages.Add(update.Message.Text);            
-            MessageAdded?.Invoke(update);
-        }
+        //public void AddMessage(Update update)
+        //{
+        //    _clients[update.Message.Chat.Id].Messages.Add(update.Message.Text);            
+        //    MessageAdded?.Invoke(update);
+        //}
 
     }
 }
