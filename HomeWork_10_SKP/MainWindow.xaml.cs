@@ -32,12 +32,12 @@ namespace HomeWork_10_SKP
     /// </summary>
     public partial class MainWindow : Window
     {
-        ObservableCollection<TelegramClient> Clients;
+        //ObservableCollection<TelegramClient> Clients;
 
         public MainWindow()
-        {                        
+        {
             var services = new ServiceCollection();
-            
+
             ServiceExtension.AddTelegramBot(services);
 
             ServiceProvider container = services.BuildServiceProvider(validateScopes: false);
@@ -47,14 +47,38 @@ namespace HomeWork_10_SKP
             ITelegramBot telegramBotKeeper = scope.ServiceProvider.GetService<ITelegramBot>();
 
             telegramBotKeeper.UpdateHandler = scope.ServiceProvider.GetService<ITelegramUpdateHandler>();
-                        
+
             telegramBotKeeper.StartReceiveUpdates();
 
-            MessageBox.Show("Applicatin has been runing!");
+            MessageBox.Show("Application has been runing!");
 
             InitializeComponent();
 
-            ClientList.ItemsSource = telegramBotKeeper.ClientManager.Clients;
+            MainViewModel mainViewModel = new MainViewModel(telegramBotKeeper.ClientManager);
+
+            DataContext = mainViewModel;
+
+            //Подписка метода по добавлению нового клиента из ViewModel к событию из Model
+            telegramBotKeeper.ClientManager.ClientAdded += mainViewModel.AddClientToObsCollection;
+
+            //telegramBotKeeper.ClientManager.MessageAdded += mainViewModel.AddMessageToClientMessageList;
+
+            SendMessageButton.Click += delegate { SendMsg(); };
+            textBox_msgToSend.KeyDown += (s, e) => { if (e.Key == Key.Return) { SendMsg(); } };
+
+            void SendMsg()
+            {
+                var selectedClient = ClientList.SelectedItem as IAppClient;
+                                
+                telegramBotKeeper.Bot.SendTextMessageAsync(selectedClient.Id, textBox_msgToSend.Text);
+                                
+                //selectedClient.Messages.Add(textBox_msgToSend.Text);
+                telegramBotKeeper.ClientManager.Clients[selectedClient.Id].Messages.Add(textBox_msgToSend.Text);
+
+                textBox_msgToSend.Text = String.Empty;
+            }
+
+            //this.Closed += SaveToDB;
         }
     }
 }

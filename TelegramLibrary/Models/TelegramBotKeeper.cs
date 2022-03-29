@@ -42,6 +42,8 @@ namespace TelegramLibrary
             AllowedUpdates = { } // receive all update types
         };
 
+        private Dictionary<string, string> _settings = new Dictionary<string, string>();
+
         #endregion
 
         #region Conditions
@@ -85,13 +87,25 @@ namespace TelegramLibrary
         /// <param name="updateHandler"></param>
         public TelegramBotKeeper(IClientManager clientManager)
         {
-            string token = System.IO.File.ReadAllText("token.txt"); //получения уникального идентификатора (токена)
+            GetSettings();
+                        
+            string token = _settings["token"];
 
             _bot = new TelegramBotClient(token);
 
             _clientManager = clientManager;
 
             _updateHandler = null;
+        }
+                
+        private void GetSettings()
+        {
+            string[] str_lines = System.IO.File.ReadAllLines("config.ini");
+            foreach (string line in str_lines)
+            {
+                string[] lineContent = line.Split('=');
+                _settings.Add(lineContent[0], lineContent[1]);
+            }                        
         }
 
         /// <summary>
@@ -115,7 +129,7 @@ namespace TelegramLibrary
         {
             if (update.Type != UpdateType.Message) return;
 
-            if (!_clientManager.Clients.ContainsKey(update.Message.Chat.Id)) _clientManager.Clients.Add(update.Message.Chat.Id, new TelegramClient(update.Message.Chat.Username, update.Message.Chat.Id));
+            if (!_clientManager.IsClientExist(update.Message.Chat.Id)) _clientManager.AddClient(update);
 
             UpdateHandler.ServeUpdate(update);
 

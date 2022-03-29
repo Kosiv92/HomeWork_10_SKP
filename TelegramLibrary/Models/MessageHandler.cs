@@ -129,6 +129,8 @@ namespace TelegramLibrary
         private void ServeTextUpdate(Update update)
         {
             SaveLogger(update);
+            _botKeeper.ClientManager.AddMessage(update);
+            //_botKeeper.ClientManager.Clients[update.Message.Chat.Id].Messages.Add(update.Message.Text);
 
             if (_botKeeper.ClientManager.Clients[update.Message.Chat.Id].State.isFileSendOn == true) UploadHandler(update);
             else if (_botKeeper.ClientManager.Clients[update.Message.Chat.Id].State.isWeatherSearchOn == true) WeatherHandler(update);

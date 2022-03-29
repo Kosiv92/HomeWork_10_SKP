@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Telegram.Bot.Types;
 
 namespace TelegramLibrary
 {
@@ -24,8 +25,7 @@ namespace TelegramLibrary
             this.name = nickName;
             this.id = id;
             Messages = new ObservableCollection<string>();
-            State = new ClientState();
-
+            State = new ClientState();            
         }
 
         #region Поля
@@ -54,7 +54,7 @@ namespace TelegramLibrary
         /// <summary>
         /// Статус обработки обновлений от клиентов
         /// </summary>
-        public ClientState State{ get; set; }
+        public ClientState State { get; set; }
 
         /// <summary>
         /// Свойство доступа к полю храняющему уникальный идентификатор клиента
@@ -76,13 +76,7 @@ namespace TelegramLibrary
 
         #endregion
 
-        #region Методы
-
-        /// <summary>
-        /// Метод добавления нового сообщения в список сообщений чата
-        /// </summary>
-        /// <param name="message"></param>
-        public void AddMessage(string message) => Messages.Add(message);
+        #region Методы                
 
         /// <summary>
         /// Метод сравнения другого клиента с текущим
@@ -90,6 +84,11 @@ namespace TelegramLibrary
         /// <param name="otherClient">Клиент для сравнения с тем из которого вызывается метод</param>
         /// <returns>Результат проверки</returns>
         public bool Equals(TelegramClient otherClient) => otherClient.Id == this.Id;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         #endregion
 
@@ -99,6 +98,8 @@ namespace TelegramLibrary
         /// Событие для отправки уведомлений об изменении свойств объекта
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+        
+        
 
         #endregion
 

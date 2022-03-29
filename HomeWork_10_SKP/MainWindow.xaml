@@ -21,11 +21,13 @@
                        Grid.Row="0"
                        Grid.RowSpan="3">
             <ListBox x:Name="ClientList"                  
-                 Background="Blue"
-                 FontSize="20">
+                     Background="LightBlue"
+                     FontSize="20"
+                     ItemsSource="{Binding Clients}"
+                     SelectedItem="{Binding SelectedClient}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding NickName}"/>
+                        <TextBlock Text="{Binding Name}"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -42,8 +44,8 @@
                  Grid.Row="0"
                  Background="Pink"
                  FontSize="20"
-                 ItemsSource="{Binding ElementName=ClientList, Path=SelectedItem.Messages}"
-                 />
+                 ItemsSource="{Binding ElementName=ClientList, Path=SelectedItem.Messages}">            
+        </ListBox>
         <Button x:Name="SendMessageButton" Grid.Column="2"
                 Grid.Row="2"
                 Background="Aquamarine"
@@ -53,7 +55,7 @@
         <TextBox x:Name="textBox_msgToSend"
                  Grid.Column="2"
                  Grid.Row="1"
-                 Background="Brown"
+                 Background="LightYellow"
                  FontSize="20"
                  Text="Input message"/>
         

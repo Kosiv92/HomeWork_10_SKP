@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Telegram.Bot.Types;
 
 namespace TelegramLibrary
 {
-    public interface IAppClient
+    public interface IAppClient : INotifyPropertyChanged
     {
         /// <summary>
         /// Name of current client
@@ -25,5 +28,7 @@ namespace TelegramLibrary
         /// </summary>
         ClientState State { get; set; }
 
+        public ObservableCollection<string> Messages { get; set; }
+ 
     }
 }
