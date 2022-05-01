@@ -9,6 +9,8 @@ namespace TelegramLibrary
 {
     public interface ITelegramUpdateHandler
     {
-        void ServeUpdate(Update update);
+        void ServeUpdateFromClient(Update update);
+
+        void SendMessageToClient(long id, string text);
     }
 }

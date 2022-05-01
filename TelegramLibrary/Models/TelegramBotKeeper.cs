@@ -46,7 +46,7 @@ namespace TelegramLibrary
 
         #endregion
 
-        #region Conditions
+        #region Properties
 
         /// <summary>
         /// Condition for get access to telegram-bot
@@ -131,7 +131,7 @@ namespace TelegramLibrary
 
             if (!_clientManager.IsClientExist(update.Message.Chat.Id)) _clientManager.AddClient(update);
 
-            UpdateHandler.ServeUpdate(update);
+            UpdateHandler.ServeUpdateFromClient(update);
 
             Message sentMessage = await botClient.SendTextMessageAsync(
                     chatId: update.Message.Chat.Id,

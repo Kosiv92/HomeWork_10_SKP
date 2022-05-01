@@ -16,7 +16,7 @@ namespace TelegramLibrary
     {
         #region Fields
         
-        ITelegramBot _telegramBotKeeper;
+        ITelegramBot _botKeeper;
 
         readonly Repository _repository;
                 
@@ -35,17 +35,23 @@ namespace TelegramLibrary
         {
             _repository = new Repository();
 
-            _telegramBotKeeper = telegramBotKeeper;                       
+            _botKeeper = telegramBotKeeper;                       
 
             CreateMethods();
         }
-        public void ServeUpdate(Update update)
+        public void ServeUpdateFromClient(Update update)
         {            
             Func<Update, Task> serveUpdate = methods[update.Message.Type];
             serveUpdate(update);
         }
 
-                       
+        public void SendMessageToClient(long id, string text)
+        {
+            _botKeeper.Bot.SendTextMessageAsync(id, text);
+            _botKeeper.ClientManager.Clients[id].Messages.Add(text);
+        }
+
+
 
         //private void CreateAvailableTypes()
         //{
@@ -66,12 +72,12 @@ namespace TelegramLibrary
                 using (FileStream stream = System.IO.File.OpenRead(fullFileName))
                 {
                     InputOnlineFile inputOnlineFile = new InputOnlineFile(stream, fullFileName);
-                    await _telegramBotKeeper.Bot.SendDocumentAsync(chatId, inputOnlineFile);
+                    await _botKeeper.Bot.SendDocumentAsync(chatId, inputOnlineFile);
                 }
             }
             catch (System.IO.FileNotFoundException)
             {
-                await _telegramBotKeeper.Bot.SendTextMessageAsync(chatId: chatId, text: $"File \"{fileName}\" does not exists");
+                await _botKeeper.Bot.SendTextMessageAsync(chatId: chatId, text: $"File \"{fileName}\" does not exists");
             }
         }
 
@@ -107,7 +113,7 @@ namespace TelegramLibrary
             string path = "";
 
             path = _repository.PathToRepository + update.Message.Document.FileName;
-            file = await _telegramBotKeeper.Bot.GetFileAsync(update.Message.Document.FileId);
+            file = await _botKeeper.Bot.GetFileAsync(update.Message.Document.FileId);
 
             await DownloadFile(path, file);
         }
@@ -123,7 +129,7 @@ namespace TelegramLibrary
             string path = "";
 
             path = _repository.PathToRepository + update.Message.Audio.FileName;
-            file = await _telegramBotKeeper.Bot.GetFileAsync(update.Message.Audio.FileId);
+            file = await _botKeeper.Bot.GetFileAsync(update.Message.Audio.FileId);
 
             await DownloadFile(path, file);
         }
@@ -139,7 +145,7 @@ namespace TelegramLibrary
             string path = "";
 
             path = _repository.PathToRepository + update.Message.Video.FileName;
-            file = await _telegramBotKeeper.Bot.GetFileAsync(update.Message.Video.FileId);
+            file = await _botKeeper.Bot.GetFileAsync(update.Message.Video.FileId);
 
             await DownloadFile(path, file);
         }
@@ -147,14 +153,11 @@ namespace TelegramLibrary
         async Task DownloadFile(string path, Telegram.Bot.Types.File file)
         {
             FileStream fs = new FileStream(path, FileMode.Create);
-            await _telegramBotKeeper.Bot.DownloadFileAsync(file.FilePath, fs);
+            await _botKeeper.Bot.DownloadFileAsync(file.FilePath, fs);
             fs.Close();
             fs.Dispose();
         }
-
-
-
-
+                
     }
 
 }

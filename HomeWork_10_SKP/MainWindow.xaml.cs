@@ -36,44 +36,30 @@ namespace HomeWork_10_SKP
 
         public MainWindow()
         {
-            var services = new ServiceCollection();
+            MainViewModel mainViewModel = new MainViewModel(this);
 
-            ServiceExtension.AddTelegramBot(services);
-
-            ServiceProvider container = services.BuildServiceProvider(validateScopes: false);
-
-            IServiceScope scope = container.CreateScope();
-
-            ITelegramBot telegramBotKeeper = scope.ServiceProvider.GetService<ITelegramBot>();
-
-            telegramBotKeeper.UpdateHandler = scope.ServiceProvider.GetService<ITelegramUpdateHandler>();
-
-            telegramBotKeeper.StartReceiveUpdates();
+            mainViewModel.TelegramBotKeeper.StartReceiveUpdates();
 
             MessageBox.Show("Application has been runing!");
 
             InitializeComponent();
-
-            MainViewModel mainViewModel = new MainViewModel(telegramBotKeeper.ClientManager);
-
+                        
             DataContext = mainViewModel;
 
-            //Подписка метода по добавлению нового клиента из ViewModel к событию из Model
-            telegramBotKeeper.ClientManager.ClientAdded += mainViewModel.AddClientToObsCollection;
-
-            //telegramBotKeeper.ClientManager.MessageAdded += mainViewModel.AddMessageToClientMessageList;
-
-            SendMessageButton.Click += delegate { SendMsg(); };
-            textBox_msgToSend.KeyDown += (s, e) => { if (e.Key == Key.Return) { SendMsg(); } };
+            //SendMessageButton.Click += delegate { SendMsg(); };
+            textBox_msgToSend.KeyDown += (s, e) => { if (e.Key == Key.Return) { mainViewModel.SendMessageToClient(textBox_msgToSend.Text); } };
 
             void SendMsg()
             {
                 var selectedClient = ClientList.SelectedItem as IAppClient;
-                                
-                telegramBotKeeper.Bot.SendTextMessageAsync(selectedClient.Id, textBox_msgToSend.Text);
-                                
-                //selectedClient.Messages.Add(textBox_msgToSend.Text);
-                telegramBotKeeper.ClientManager.Clients[selectedClient.Id].Messages.Add(textBox_msgToSend.Text);
+
+                if (selectedClient != null)
+                {
+                    mainViewModel.TelegramBotKeeper.Bot.SendTextMessageAsync(selectedClient.Id, textBox_msgToSend.Text);
+
+                    //selectedClient.Messages.Add(textBox_msgToSend.Text);
+                    mainViewModel.TelegramBotKeeper.ClientManager.Clients[selectedClient.Id].Messages.Add(textBox_msgToSend.Text);
+                }
 
                 textBox_msgToSend.Text = String.Empty;
             }

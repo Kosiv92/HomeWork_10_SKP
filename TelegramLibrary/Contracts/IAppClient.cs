@@ -9,7 +9,7 @@ using Telegram.Bot.Types;
 
 namespace TelegramLibrary
 {
-    public interface IAppClient : INotifyPropertyChanged
+    public interface IAppClient /*: INotifyPropertyChanged*/
     {
         /// <summary>
         /// Name of current client
@@ -28,7 +28,7 @@ namespace TelegramLibrary
         /// </summary>
         ClientState State { get; set; }
 
-        public ObservableCollection<string> Messages { get; set; }
+        public List<string> Messages { get; set; }
  
     }
 }

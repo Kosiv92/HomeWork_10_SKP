@@ -12,7 +12,7 @@ namespace TelegramLibrary
     /// <summary>
     /// Модель клиента Telegram-бота
     /// </summary>
-    public class TelegramClient : INotifyPropertyChanged, IEquatable<TelegramClient>, IAppClient
+    public class TelegramClient : /*INotifyPropertyChanged, */IEquatable<TelegramClient>, IAppClient
     {
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace TelegramLibrary
         {
             this.name = nickName;
             this.id = id;
-            Messages = new ObservableCollection<string>();
+            Messages = new List<string>();
             State = new ClientState();            
         }
 
@@ -47,7 +47,7 @@ namespace TelegramLibrary
             set
             {
                 this.name = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Name)));
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Name)));
             }
         }
 
@@ -65,14 +65,14 @@ namespace TelegramLibrary
             set
             {
                 this.id = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Id)));
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Id)));
             }
         }
 
         /// <summary>
         /// Список всех сообщений в чате с клиентом
         /// </summary>
-        public ObservableCollection<string> Messages { get; set; }
+        public List<string> Messages { get; set; }
 
         #endregion
 
@@ -85,19 +85,19 @@ namespace TelegramLibrary
         /// <returns>Результат проверки</returns>
         public bool Equals(TelegramClient otherClient) => otherClient.Id == this.Id;
 
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        //protected virtual void OnPropertyChanged(string propertyName)
+        //{
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //}
 
         #endregion
 
         #region События
 
-        /// <summary>
-        /// Событие для отправки уведомлений об изменении свойств объекта
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        ///// <summary>
+        ///// Событие для отправки уведомлений об изменении свойств объекта
+        ///// </summary>
+        //public event PropertyChangedEventHandler PropertyChanged;
         
         
 

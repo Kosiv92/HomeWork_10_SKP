@@ -106,7 +106,7 @@ namespace TelegramLibrary
         /// Метод обработки обновлений от клиентов
         /// </summary>
         /// <param name="update">Входящее обновление от клиента</param>
-        public void ServeUpdate(Update update)
+        public void ServeUpdateFromClient(Update update)
         {
 
             switch (update.Message.Type)
@@ -114,12 +114,23 @@ namespace TelegramLibrary
                 case MessageType.Photo:
                 case MessageType.Document:
                 case MessageType.Audio:
-                    _iOHelper.ServeUpdate(update);
+                    _iOHelper.ServeUpdateFromClient(update);
                     break;
                 case MessageType.Text:
                     ServeTextUpdate(update);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Метод отправки сообщений клиенту
+        /// </summary>
+        /// <param name="id">ID чата клиента</param>
+        /// <param name="text">Сообщение отправляемое клиенту</param>
+        public void SendMessageToClient(long id, string text)
+        {
+            _botKeeper.Bot.SendTextMessageAsync(id, text);
+            _botKeeper.ClientManager.Clients[id].Messages.Add(text);
         }
 
         /// <summary>
@@ -185,7 +196,7 @@ namespace TelegramLibrary
             if (update.Message.Text == CancelText)
             {
                 _botKeeper.ClientManager.Clients[update.Message.Chat.Id].State.isWeatherSearchOn = false;
-                ServeUpdate(update);
+                ServeUpdateFromClient(update);
             }
             else
             {
@@ -237,7 +248,7 @@ namespace TelegramLibrary
                 case CancelText:
                     _botKeeper.ClientManager.Clients[update.Message.Chat.Id].State.isFileSendOn = false;
                     numberOfFile = 0;
-                    ServeUpdate(update);
+                    ServeUpdateFromClient(update);
                     break;
                 case PrevFileText:
                     if (numberOfFile > 0) numberOfFile--;

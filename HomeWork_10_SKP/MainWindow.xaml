@@ -5,26 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HomeWork_10_SKP"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="495" ResizeMode="CanResize">
+        Title="ChatBot Telegram" Height="450" Width="495" ResizeMode="CanResize" WindowStyle="ToolWindow">
     <Grid RenderTransformOrigin="0.504,0.504">
         <Grid.ColumnDefinitions>            
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="149*"/>
+            <ColumnDefinition Width="Auto"/>            
+            <ColumnDefinition Width="328*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="170*" />
+            <RowDefinition Height="45" />
+            <RowDefinition Height="25*" />
         </Grid.RowDefinitions>
         <ScrollViewer  Grid.Column="0" 
                        Grid.Row="0"
-                       Grid.RowSpan="3">
-            <ListBox x:Name="ClientList"                  
-                     Background="LightBlue"
+                       Grid.RowSpan="3" Grid.ColumnSpan="2">
+            <ListBox x:Name="ClientList"
                      FontSize="20"
+                     Foreground="White"
                      ItemsSource="{Binding Clients}"
                      SelectedItem="{Binding SelectedClient}">
+                <ListBox.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="Black" Offset="0"/>
+                        <GradientStop Color="#FF0F0FA0" Offset="1"/>
+                    </LinearGradientBrush>
+                </ListBox.Background>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}"/>
@@ -32,34 +38,44 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </ScrollViewer>
-        
-        <GridSplitter Grid.Column="1" 
+
+        <GridSplitter Grid.Column="2" 
                       Grid.RowSpan="3" 
                       ShowsPreview="False" 
                       Width="3" 
-                      HorizontalAlignment="Center" 
-                      VerticalAlignment="Stretch" />
+                      HorizontalAlignment="Center" />
         <ListBox x:Name="ListMessages" 
-                 Grid.Column="2"
+                 Grid.Column="3"
                  Grid.Row="0"
-                 Background="Pink"
+                 Foreground="White"
                  FontSize="20"
-                 ItemsSource="{Binding ElementName=ClientList, Path=SelectedItem.Messages}">            
+                 ItemsSource="{Binding ElementName=ClientList, Path=SelectedItem.Messages, Mode=OneWay}" Grid.ColumnSpan="2">
+            <ListBox.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="#FF0F0FA0" Offset="1"/>
+                </LinearGradientBrush>
+            </ListBox.Background>
         </ListBox>
-        <Button x:Name="SendMessageButton" Grid.Column="2"
+        <Button x:Name="SendMessageButton" Grid.Column="3"
                 Grid.Row="2"
-                Background="Aquamarine"
+                Command="{Binding SendMessage}"
+                CommandParameter= "{Binding TextBySupport}"
+                Background="#FF0F0FA0"
+                FontWeight="Bold"
+                Foreground="White"
                 Content="Send" 
-                FontSize="25"
+                FontSize="25" Grid.ColumnSpan="2" Margin="0,1,0,0"
                 />
-        <TextBox x:Name="textBox_msgToSend"
-                 Grid.Column="2"
+        <TextBox x:Name="textBox_msgToSend"                 
+                 Grid.Column="3"
                  Grid.Row="1"
-                 Background="LightYellow"
-                 FontSize="20"
-                 Text="Input message"/>
-        
-        
+                 Background="#FFD2D3FF"
+                 FontSize="20" 
+                 HorizontalScrollBarVisibility="Auto"
+                 Text="{Binding TextBySupport}"/>
+
+
         <!--<Button Content="Button" HorizontalAlignment="Left" Margin="181,388,0,0" VerticalAlignment="Top" Width="305" Height="39"/>
         <ListBox Margin="181,10,3,51"/>-->
 
