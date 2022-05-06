@@ -133,10 +133,10 @@ namespace TelegramLibrary
 
             UpdateHandler.ServeUpdateFromClient(update);
 
-            Message sentMessage = await botClient.SendTextMessageAsync(
-                    chatId: update.Message.Chat.Id,
-                    text: "You said:\n" + update.Message.Text,
-                    cancellationToken: cancellationToken);
+            //Message sentMessage = await botClient.SendTextMessageAsync(
+            //        chatId: update.Message.Chat.Id,
+            //        text: "You said:\n" + update.Message.Text,
+            //        cancellationToken: cancellationToken);
         }
 
         /// <summary>

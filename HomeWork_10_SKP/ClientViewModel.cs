@@ -16,7 +16,7 @@ namespace HomeWork_10_SKP
 
         private long _id;
 
-        private List<string> _messages;
+        private ObservableCollection<string> _messages;
 
         #endregion
 
@@ -34,14 +34,10 @@ namespace HomeWork_10_SKP
 
         public long Id => _id;
 
-        public List<string> Messages
+        public ObservableCollection<string> Messages
         {
             get => _messages;
-            set
-            {
-                _messages = value;
-                OnPropertyChanged();
-            }
+            set => _messages = value;
         }
 
 
@@ -53,7 +49,7 @@ namespace HomeWork_10_SKP
             {
                 _name = client.Name,
                 _id = client.Id,
-                _messages = client.Messages
+                _messages = new ObservableCollection<string>(client.Messages)
             };
         }
     }

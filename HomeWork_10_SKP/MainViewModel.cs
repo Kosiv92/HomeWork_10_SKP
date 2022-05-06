@@ -87,6 +87,8 @@ namespace HomeWork_10_SKP
 
             telegramBotKeeper.ClientManager.ClientAdded += AddClientToObsCollection;
 
+            telegramBotKeeper.ClientManager.MessageAdded += AddMessageToClientMessageList;
+
             SendMessage = new RelayCommand(SendMessageToClient);
         }
 

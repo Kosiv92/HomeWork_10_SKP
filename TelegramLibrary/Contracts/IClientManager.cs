@@ -19,11 +19,11 @@ namespace TelegramLibrary
 
         public void AddClient(Update update);
 
-        //public void AddMessage(Update update);
-                
+        public void AddMessage(Update update);
+
         event Action<IAppClient> ClientAdded;
 
-        //event Action<Update> MessageAdded;
+        event Action<Update> MessageAdded;
 
     }
 }
