@@ -104,16 +104,19 @@ namespace HomeWork_10_SKP
 
         public void AddMessageToClientMessageList(Update update)
         {
-            for (int i = 0; i < Clients.Count; i++)
+            _window.Dispatcher.Invoke(() => 
             {
-                if (Clients[i].Id == update.Message.Chat.Id) Clients[i].Messages.Add(update.Message.Text);
+                for (int i = 0; i < Clients.Count; i++)
+                {
+                    if (Clients[i].Id == update.Message.Chat.Id) Clients[i].Messages.Add(update.Message.Text);
 
-            }
+                }
+            });
+            
         }
 
         public void SendMessageToClient(object parameter)
-        {
-            //Dispatcher.CurrentDispatcher.Invoke(() => { });
+        {            
             ClientViewModel selectedClient = (ClientViewModel)_window.ClientList.SelectedItem;
             var id = selectedClient.Id;
             telegramBotKeeper.UpdateHandler.SendMessageToClient(id, "Bot: " + (string)parameter);            
