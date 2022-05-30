@@ -10,14 +10,10 @@ namespace TelegramLibrary
     public interface ITelegramBot
     {
         /// <summary>
-        /// Start to recieve updates
+        /// Запуск приема обновления
         /// </summary>
         public void StartReceiveUpdates();
-
-        /// <summary>
-        /// Condition to get access to list of clients
-        /// </summary>
-        /// <returns></returns>
+                
         public IClientManager ClientManager{ get; set; }
 
         public ITelegramUpdateHandler UpdateHandler { get; set; }

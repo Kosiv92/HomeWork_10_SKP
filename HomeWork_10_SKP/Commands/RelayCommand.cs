@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace HomeWork_10_SKP
@@ -17,6 +13,7 @@ namespace HomeWork_10_SKP
 
         #endregion
 
+        #region Methods
         public RelayCommand(Action<object> execute) : this(execute, null) { }
 
         public RelayCommand(Action<object> execute, Predicate<object> canExecute)
@@ -24,12 +21,6 @@ namespace HomeWork_10_SKP
             if(execute == null) throw new ArgumentNullException("execute");
             _execute = execute;
             _canExecute = canExecute;
-        }
-
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value;}
         }
 
         public bool CanExecute(object parameter)
@@ -41,5 +32,16 @@ namespace HomeWork_10_SKP
         {
             { _execute(parameter); }
         }
+
+        #endregion
+
+        #region Events
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value;}
+        }
+        #endregion
+
     }
 }

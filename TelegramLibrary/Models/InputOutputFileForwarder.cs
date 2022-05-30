@@ -47,22 +47,9 @@ namespace TelegramLibrary
 
         public void SendMessageToClient(long id, string text)
         {
-            _botKeeper.Bot.SendTextMessageAsync(id, text);
-            _botKeeper.ClientManager.Clients[id].Messages.Add(text);
+            _botKeeper.Bot.SendTextMessageAsync(id, text);            
         }
-
-
-
-        //private void CreateAvailableTypes()
-        //{
-        //    var types = new Dictionary<MessageType, Func<Update, Task>>
-        //    {
-        //        { MessageType.Document, SaveDocumentToRepository },
-        //        { MessageType.Video, SaveVideoToRepository },
-        //        { MessageType.Audio, SaveAudioToRepository },                
-        //    };
-        //}
-
+                
         public async void SendFile(string fileName, ChatId chatId)
         {
             string fullFileName = _repository.PathToRepository + "\\" + fileName;

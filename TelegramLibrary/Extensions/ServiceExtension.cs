@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace TelegramLibrary
 {
+    /// <summary>
+    /// DI-Контейнер
+    /// </summary>
     public static class ServiceExtension
     {
         public static void AddTelegramBot(this IServiceCollection services)

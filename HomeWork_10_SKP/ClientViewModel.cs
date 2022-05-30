@@ -1,13 +1,20 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
+using Telegram.Bot.Types;
 using TelegramLibrary;
 
 namespace HomeWork_10_SKP
 {
+    /// <summary>
+    /// Модель-представление сущности "Клиент"
+    /// </summary>
+    [JsonObject(IsReference = true)]
     public class ClientViewModel : BaseViewModel
     {
         #region Fields
@@ -15,8 +22,6 @@ namespace HomeWork_10_SKP
         private string _name;
 
         private long _id;
-
-        private ObservableCollection<string> _messages;
 
         #endregion
 
@@ -32,26 +37,28 @@ namespace HomeWork_10_SKP
             }
         }
 
-        public long Id => _id;
-
-        public ObservableCollection<string> Messages
+        public long Id
         {
-            get => _messages;
-            set => _messages = value;
+            get => _id;
+            set => _id = value;
         }
+
+        public ObservableCollection<HomeWork_10_SKP.Message> Messages
+        {
+            get;
+            set;
+        } = new ObservableCollection<HomeWork_10_SKP.Message>();
+
 
 
         #endregion
 
-        public static ClientViewModel Create(IAppClient client)
+        public void AddMessage(string author, string text)
         {
-            return new ClientViewModel
-            {
-                _name = client.Name,
-                _id = client.Id,
-                _messages = new ObservableCollection<string>(client.Messages)
-            };
+            var message = new HomeWork_10_SKP.Message() { Author = author, Text = text };
+            MainViewModel.Dispatcher.Invoke(() => Messages.Add(message));
         }
+
     }
 }
 

@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace HomeWork_10_SKP
 {
+    /// <summary>
+    /// Абстрактный класс представляющий сущность Модель-Представления
+    /// </summary>
     public abstract class BaseViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

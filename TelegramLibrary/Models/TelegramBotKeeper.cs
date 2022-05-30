@@ -80,7 +80,7 @@ namespace TelegramLibrary
         #region Methods
 
         /// <summary>
-        /// Constructor of object
+        /// Конструктор объекта
         /// </summary>
         /// <param name="token"></param>
         /// <param name="clientManager"></param>
@@ -97,7 +97,10 @@ namespace TelegramLibrary
 
             _updateHandler = null;
         }
-                
+            
+        /// <summary>
+        /// Метод получения настроек бота
+        /// </summary>
         private void GetSettings()
         {
             string[] str_lines = System.IO.File.ReadAllLines("config.ini");
@@ -133,10 +136,6 @@ namespace TelegramLibrary
 
             UpdateHandler.ServeUpdateFromClient(update);
 
-            //Message sentMessage = await botClient.SendTextMessageAsync(
-            //        chatId: update.Message.Chat.Id,
-            //        text: "You said:\n" + update.Message.Text,
-            //        cancellationToken: cancellationToken);
         }
 
         /// <summary>

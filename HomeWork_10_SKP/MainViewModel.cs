@@ -5,7 +5,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -23,13 +25,13 @@ namespace HomeWork_10_SKP
 
         private ServiceCollection services;
 
-        private ITelegramBot telegramBotKeeper;
+        private ITelegramBot _telegramBotKeeper;
 
-        private IAppClient selectedClient;
+        private ClientViewModel _selectedClient;
 
         private ICommand _sendMessage;
 
-        private MainWindow _window;
+        public static Dispatcher Dispatcher { get; private set; }
 
         private string _textBySupport;
 
@@ -41,34 +43,34 @@ namespace HomeWork_10_SKP
 
         public ITelegramBot TelegramBotKeeper
         {
-            get { return telegramBotKeeper; }
-            set { telegramBotKeeper = value; }
+            get { return _telegramBotKeeper; }
+            set { _telegramBotKeeper = value; }
         }
 
-        public IAppClient SelectedClient
+        public ClientViewModel SelectedClient
         {
-            get { return selectedClient; }
+            get { return _selectedClient; }
             set
             {
-                selectedClient = value;
+                _selectedClient = value;
                 OnPropertyChanged();
             }
         }
 
-        public string TextBySupport 
+        public string TextBySupport
+        {
+            get => _textBySupport;
+            set
             {
-                get => _textBySupport;
-            set { _textBySupport = value;
+                _textBySupport = value;
                 OnPropertyChanged();
             }
-            }
+        }
 
         #endregion
 
-        public MainViewModel(MainWindow window)
-        {
-            _window = window;
-            
+        public MainViewModel(Dispatcher dispatcher)
+        {            
             services = new ServiceCollection();
 
             ServiceExtension.AddTelegramBot(services);
@@ -77,19 +79,32 @@ namespace HomeWork_10_SKP
 
             IServiceScope scope = container.CreateScope();
 
-            telegramBotKeeper = scope.ServiceProvider.GetService<ITelegramBot>();
+            _telegramBotKeeper = scope.ServiceProvider.GetService<ITelegramBot>();
 
-            telegramBotKeeper.UpdateHandler = scope.ServiceProvider.GetService<ITelegramUpdateHandler>();
+            _telegramBotKeeper.UpdateHandler = scope.ServiceProvider.GetService<ITelegramUpdateHandler>();
 
-            Clients = new ObservableCollection<ClientViewModel>();
+            _telegramBotKeeper.ClientManager.ClientAdded += AddClientToObsCollection;
 
-            BindingOperations.EnableCollectionSynchronization(Clients, @lock);
-
-            telegramBotKeeper.ClientManager.ClientAdded += AddClientToObsCollection;
-
-            telegramBotKeeper.ClientManager.MessageAdded += AddMessageToClientMessageList;
+            _telegramBotKeeper.ClientManager.MessageAdded += AddMessageToClientList;
 
             SendMessage = new RelayCommand(SendMessageToClient);
+
+            _telegramBotKeeper.StartReceiveUpdates();
+
+            Dispatcher = dispatcher;
+
+            if (System.IO.File.Exists("clients.json"))
+            {
+                Clients = JSONSerializer.JSONDeserializeClients();
+                MessageBox.Show("Обнаружен файл с данными! Данные успешно загружены!");
+            }
+            else
+            {
+                Clients = new ObservableCollection<ClientViewModel>();
+                MessageBox.Show("Файл с данными не обнаружен!");
+            }
+
+            BindingOperations.EnableCollectionSynchronization(Clients, @lock);
         }
 
         /// <summary>
@@ -98,29 +113,45 @@ namespace HomeWork_10_SKP
         /// <param name="newClient">Новый клиент телеграм-бота для добавления в коллекцию ViewModel</param>
         public void AddClientToObsCollection(IAppClient newClient)
         {
-            var client = ClientViewModel.Create(newClient);
-            Clients.Add(client);
+            bool exist = false;
+
+            foreach (var clientViewModel in Clients)
+            {
+                if (clientViewModel.Id == newClient.Id) exist = true;
+            }
+
+            if (!exist)
+            {
+                var client = new ClientViewModel() { Id = newClient.Id, Name = newClient.Name, Messages = new ObservableCollection<HomeWork_10_SKP.Message>() };
+
+                Clients.Add(client);
+            }
+
         }
 
-        public void AddMessageToClientMessageList(Update update)
+        public void AddMessageToClientList(Update update)
         {
-            _window.Dispatcher.Invoke(() => 
-            {
-                for (int i = 0; i < Clients.Count; i++)
-                {
-                    if (Clients[i].Id == update.Message.Chat.Id) Clients[i].Messages.Add(update.Message.Text);
+            var client = FindClientById(update.Message.Chat.Id);
 
-                }
-            });
-            
+            client.AddMessage(update.Message.Chat.Username, update.Message.Text);                        
         }
 
         public void SendMessageToClient(object parameter)
         {            
-            ClientViewModel selectedClient = (ClientViewModel)_window.ClientList.SelectedItem;
-            var id = selectedClient.Id;
-            telegramBotKeeper.UpdateHandler.SendMessageToClient(id, "Bot: " + (string)parameter);            
+            var id = _selectedClient.Id;
+            var text = (string)parameter;
+            _telegramBotKeeper.UpdateHandler.SendMessageToClient(id, text);
+            _selectedClient.AddMessage("Bot", text);
             TextBySupport = "";
+        }
+
+        private ClientViewModel FindClientById(long id)
+        {
+            for (int i = 0; i < Clients.Count; i++)
+            {
+                if (Clients[i].Id == id) return Clients[i];
+            }
+            return null;
         }
 
         public ICommand SendMessage

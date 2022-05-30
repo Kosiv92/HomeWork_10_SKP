@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -9,26 +10,26 @@ using Telegram.Bot.Types;
 
 namespace TelegramLibrary
 {
-    public interface IAppClient /*: INotifyPropertyChanged*/
+    [JsonObject(IsReference = true)]
+    public interface IAppClient
     {
         /// <summary>
-        /// Name of current client
+        /// Имя клиент
         /// </summary>
         /// <returns></returns>
         string Name { get;}
 
         /// <summary>
-        /// Unique identificator of current client
+        /// Уникальный идентификатор клиента
         /// </summary>
         /// <returns></returns>
         long Id { get; }
 
+        [JsonIgnore]
         /// <summary>
-        /// States that show which of services are used by subscriber
+        /// Статус клиента
         /// </summary>
-        ClientState State { get; set; }
-
-        public List<string> Messages { get; set; }
+        ClientState State { get; set; }                
  
     }
 }

@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
@@ -33,38 +34,39 @@ namespace HomeWork_10_SKP
     public partial class MainWindow : Window
     {
         //ObservableCollection<TelegramClient> Clients;
+        MainViewModel mainViewModel;
 
         public MainWindow()
         {
-            MainViewModel mainViewModel = new MainViewModel(this);
-
-            mainViewModel.TelegramBotKeeper.StartReceiveUpdates();
-
-            MessageBox.Show("Application has been runing!");
+            mainViewModel = new MainViewModel(this.Dispatcher);                      
 
             InitializeComponent();
                         
             DataContext = mainViewModel;
-
-            //SendMessageButton.Click += delegate { SendMsg(); };
+                        
             textBox_msgToSend.KeyDown += (s, e) => { if (e.Key == Key.Return) { mainViewModel.SendMessageToClient(textBox_msgToSend.Text); } };
 
-            void SendMsg()
-            {
-                var selectedClient = ClientList.SelectedItem as IAppClient;
+            //void SendMsg()
+            //{
+            //    var selectedClient = ClientList.SelectedItem as IAppClient;
 
-                if (selectedClient != null)
-                {
-                    mainViewModel.TelegramBotKeeper.Bot.SendTextMessageAsync(selectedClient.Id, textBox_msgToSend.Text);
+            //    if (selectedClient != null)
+            //    {
+            //        mainViewModel.TelegramBotKeeper.Bot.SendTextMessageAsync(selectedClient.Id, textBox_msgToSend.Text);
 
-                    //selectedClient.Messages.Add(textBox_msgToSend.Text);
-                    mainViewModel.TelegramBotKeeper.ClientManager.Clients[selectedClient.Id].Messages.Add(textBox_msgToSend.Text);
-                }
+            //        //selectedClient.Messages.Add(textBox_msgToSend.Text);
+            //        mainViewModel.TelegramBotKeeper.ClientManager.Clients[selectedClient.Id].Messages.Add(textBox_msgToSend.Text);
+            //    }
 
-                textBox_msgToSend.Text = String.Empty;
-            }
+            //    textBox_msgToSend.Text = String.Empty;
+            //}
 
             //this.Closed += SaveToDB;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            JSONSerializer.JSONSerializeClients(mainViewModel.Clients);
         }
     }
 }

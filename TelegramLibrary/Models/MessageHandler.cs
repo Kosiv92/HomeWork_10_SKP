@@ -130,7 +130,7 @@ namespace TelegramLibrary
         public void SendMessageToClient(long id, string text)
         {
             _botKeeper.Bot.SendTextMessageAsync(id, text);
-            _botKeeper.ClientManager.Clients[id].Messages.Add(text);
+            //_botKeeper.ClientManager.Clients[id].Messages.Add(text);
         }
 
         /// <summary>
@@ -138,10 +138,8 @@ namespace TelegramLibrary
         /// </summary>
         /// <param name="update"></param>
         private void ServeTextUpdate(Update update)
-        {
-            //SaveLogger(update);
-            _botKeeper.ClientManager.AddMessage(update);
-            //_botKeeper.ClientManager.Clients[update.Message.Chat.Id].Messages.Add(update.Message.Text);
+        {            
+            _botKeeper.ClientManager.AddMessage(update);            
 
             if (_botKeeper.ClientManager.Clients[update.Message.Chat.Id].State.isFileSendOn == true) UploadHandler(update);
             else if (_botKeeper.ClientManager.Clients[update.Message.Chat.Id].State.isWeatherSearchOn == true) WeatherHandler(update);

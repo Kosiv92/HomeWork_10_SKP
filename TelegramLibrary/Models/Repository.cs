@@ -12,22 +12,22 @@ namespace TelegramLibrary
 {    
     public class Repository
     {
-        //string which keeps path to directory of repository
+        /// <summary>
+        /// Путь к репозиторию (хранилищу файлов)
+        /// </summary>
         readonly string pathToRepository;
 
         DirectoryInfo _repoDirectory;
 
         /// <summary>
-        /// Condition for access to repository
+        /// Свойства доступа к репозиторию
         /// </summary>
         public string PathToRepository
         {
             get { return pathToRepository; }
         }
 
-        /// <summary>
-        /// Constructor of object
-        /// </summary>
+        
         public Repository()
         {
             pathToRepository = Environment.CurrentDirectory + "\\repo\\";
@@ -35,9 +35,7 @@ namespace TelegramLibrary
             CreateRepoDirectory();
         }
 
-        /// <summary>
-        /// Create directory of repository if it isn't exist
-        /// </summary>
+        
         public void CreateRepoDirectory()
         {
             if (!CheckRepoDirectory())
@@ -47,11 +45,7 @@ namespace TelegramLibrary
 
             _repoDirectory = new DirectoryInfo(pathToRepository);
         }
-
-        /// <summary>
-        /// Check that directory of repository exist 
-        /// </summary>
-        /// <returns>Результат проверки</returns>
+                
         bool CheckRepoDirectory()
         {
             DirectoryInfo path = new DirectoryInfo(pathToRepository);
@@ -60,7 +54,7 @@ namespace TelegramLibrary
         }
 
         /// <summary>
-        /// Get list of filenames in repository
+        /// Получить список файлов находящихся в репозитории
         /// </summary>
         /// <returns>Список файлов хранящихся в репозитории</returns>
         public FileInfo[] GetFilesNameList()
@@ -76,7 +70,7 @@ namespace TelegramLibrary
         }
 
         /// <summary>
-        /// Get list of files in repository
+        /// Получить список названий файлов хранящихся в репозитории
         /// </summary>
         /// <returns></returns>
         public string GetAllFileNames()

@@ -12,7 +12,7 @@ namespace TelegramLibrary
     /// <summary>
     /// Модель клиента Telegram-бота
     /// </summary>
-    public class TelegramClient : /*INotifyPropertyChanged, */IEquatable<TelegramClient>, IAppClient
+    public class TelegramClient : IEquatable<TelegramClient>, IAppClient
     {
 
         /// <summary>
@@ -23,8 +23,7 @@ namespace TelegramLibrary
         public TelegramClient(string nickName, long id)
         {
             this.name = nickName;
-            this.id = id;
-            Messages = new List<string>();
+            this.id = id;            
             State = new ClientState();            
         }
 
@@ -46,8 +45,7 @@ namespace TelegramLibrary
             get { return this.name; }
             set
             {
-                this.name = value;
-                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Name)));
+                this.name = value;                
             }
         }
 
@@ -64,15 +62,9 @@ namespace TelegramLibrary
             get { return this.id; }
             set
             {
-                this.id = value;
-                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Id)));
+                this.id = value;                
             }
         }
-
-        /// <summary>
-        /// Список всех сообщений в чате с клиентом
-        /// </summary>
-        public List<string> Messages { get; set; }
 
         #endregion
 
@@ -89,17 +81,6 @@ namespace TelegramLibrary
         //{
         //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         //}
-
-        #endregion
-
-        #region События
-
-        ///// <summary>
-        ///// Событие для отправки уведомлений об изменении свойств объекта
-        ///// </summary>
-        //public event PropertyChangedEventHandler PropertyChanged;
-        
-        
 
         #endregion
 

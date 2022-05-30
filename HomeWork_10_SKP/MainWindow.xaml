@@ -3,9 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:uc="clr-namespace:HomeWork_10_SKP.UserControls"
         xmlns:local="clr-namespace:HomeWork_10_SKP"
         mc:Ignorable="d"
-        Title="ChatBot Telegram" Height="450" Width="495" ResizeMode="CanResize" WindowStyle="ToolWindow">
+        Title="ChatBot Telegram" Height="450" Width="495" ResizeMode="CanResize" WindowStyle="ToolWindow"
+        Closed="Window_Closed">
     <Grid RenderTransformOrigin="0.504,0.504">
         <Grid.ColumnDefinitions>            
             <ColumnDefinition Width="149*"/>
@@ -56,6 +58,11 @@
                     <GradientStop Color="#FF0F0FA0" Offset="1"/>
                 </LinearGradientBrush>
             </ListBox.Background>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <uc:MessageUserControl/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
         <Button x:Name="SendMessageButton" Grid.Column="3"
                 Grid.Row="2"
