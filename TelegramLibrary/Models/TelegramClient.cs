@@ -5,13 +5,14 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Telegram.Bot.Types;
 
-namespace HomeWork_10_SKP
+namespace TelegramLibrary
 {
     /// <summary>
     /// Модель клиента Telegram-бота
     /// </summary>
-    public class TelegramClient : INotifyPropertyChanged, IEquatable<TelegramClient>
+    public class TelegramClient : IEquatable<TelegramClient>, IAppClient
     {
 
         /// <summary>
@@ -21,17 +22,17 @@ namespace HomeWork_10_SKP
         /// <param name="id"></param>
         public TelegramClient(string nickName, long id)
         {
-            this.nickName = nickName;
-            this.id = id;
-            Messages = new ObservableCollection<string>();
-
+            this.name = nickName;
+            this.id = id;            
+            State = new ClientState();            
         }
 
         #region Поля
 
-        private string nickName; //логин клиента
+        private string name; //логин клиента
 
-        private long id; //уникальный идентификатор клиента
+        private long id; //уникальный идентификатор клиента               
+
         #endregion
 
         #region Свойства
@@ -39,20 +40,19 @@ namespace HomeWork_10_SKP
         /// <summary>
         /// Свойство доступа к полю хранющему логин клиента
         /// </summary>
-        public string NickName
+        public string Name
         {
-            get { return this.nickName; }
+            get { return this.name; }
             set
             {
-                this.nickName = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.NickName)));
+                this.name = value;                
             }
         }
 
         /// <summary>
         /// Статус обработки обновлений от клиентов
         /// </summary>
-        internal ClientState TelegramClientState{ get; set; }
+        public ClientState State { get; set; }
 
         /// <summary>
         /// Свойство доступа к полю храняющему уникальный идентификатор клиента
@@ -62,25 +62,13 @@ namespace HomeWork_10_SKP
             get { return this.id; }
             set
             {
-                this.id = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Id)));
+                this.id = value;                
             }
         }
 
-        /// <summary>
-        /// Список всех сообщений в чате с клиентом
-        /// </summary>
-        public ObservableCollection<string> Messages { get; set; }
-
         #endregion
 
-        #region Методы
-
-        /// <summary>
-        /// Метод добавления нового сообщения в список сообщений чата
-        /// </summary>
-        /// <param name="message"></param>
-        public void AddMessage(string message) => Messages.Add(message);
+        #region Методы                
 
         /// <summary>
         /// Метод сравнения другого клиента с текущим
@@ -89,14 +77,10 @@ namespace HomeWork_10_SKP
         /// <returns>Результат проверки</returns>
         public bool Equals(TelegramClient otherClient) => otherClient.Id == this.Id;
 
-        #endregion
-
-        #region События
-
-        /// <summary>
-        /// Событие для отправки уведомлений об изменении свойств объекта
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        //protected virtual void OnPropertyChanged(string propertyName)
+        //{
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //}
 
         #endregion
 

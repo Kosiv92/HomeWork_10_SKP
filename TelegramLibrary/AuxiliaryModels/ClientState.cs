@@ -1,9 +1,9 @@
-﻿namespace HomeWork_10_SKP
+﻿namespace TelegramLibrary
 {
     /// <summary>
-    /// Класс хранящий состояние взаимодействия с пользователем в чает
+    /// Класс хранящий состояние взаимодействия с пользователем в чате
     /// </summary>
-    internal class ClientState
+    public class ClientState
     {
         
         public ClientState()
@@ -12,7 +12,8 @@
 
             isFileSendOn = false;
         }
-
+                        
+        
         #region Поля
         /// <summary>
         /// Состояние поиска погоды

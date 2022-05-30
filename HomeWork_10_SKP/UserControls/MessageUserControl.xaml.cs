@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,22 +13,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace HomeWork_10_SKP
+namespace HomeWork_10_SKP.UserControls
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MessageUserControl.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MessageUserControl : UserControl
     {
-        ObservableCollection<TelegramClient> Clients;
-        
-        public MainWindow()
+        public MessageUserControl()
         {
             InitializeComponent();
-
-            Clients = new ObservableCollection<TelegramClient>();
-
-            ClientList.ItemsSource = Clients;
         }
+                
     }
 }
